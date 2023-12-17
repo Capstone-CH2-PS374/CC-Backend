@@ -1,15 +1,10 @@
--- CreateTable
-CREATE TABLE "Role" (
-    "roleId" SERIAL NOT NULL,
-    "role" TEXT NOT NULL,
-
-    CONSTRAINT "Role_pkey" PRIMARY KEY ("roleId")
-);
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('User', 'Organization');
 
 -- CreateTable
 CREATE TABLE "User" (
     "uuid" TEXT NOT NULL,
-    "role_id" INTEGER NOT NULL,
+    "role" "Role" NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("uuid")
 );
@@ -19,7 +14,7 @@ CREATE TABLE "UserData" (
     "user_id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "birth_date" TIMESTAMP(3) NOT NULL,
+    "birth_date" TEXT NOT NULL,
     "jobs" TEXT NOT NULL,
     "highest_edu" TEXT NOT NULL,
     "type_organization" TEXT NOT NULL,
@@ -83,9 +78,6 @@ CREATE TABLE "QRCode" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Volunteer_user_id_key" ON "Volunteer"("user_id");
-
--- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "Role"("roleId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserData" ADD CONSTRAINT "UserData_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;

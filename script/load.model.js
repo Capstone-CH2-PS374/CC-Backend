@@ -1,23 +1,19 @@
-const tf = require("@tensorflow/tfjs-node");
+const tf = require("@tensorflow/tfjs");
+require("@tensorflow/tfjs-node");
 const fs = require("fs").promises;
 const path = require("path");
 
-async function loadModel(inputPath) {
+const loadModel = async () => {
   try {
-    const model = await tf.loadLayersModel(`file://${inputPath}`);
-    console.log("Model loaded successfully");
-    return model;
+    const modelPath = path.resolve(__dirname, "../models/model.json");
+    const tokenizerPath = path.resolve(
+      __dirname,
+      "../models/test_tokenizerjson.json"
+    );
+    let model = await tf.loadLayersModel("file://" + modelPath);
+    let tokenizer = JSON.parse(await fs.readFile(tokenizerPath, "utf8"));
+    console.log("Model and tokenizer loaded successfully");
   } catch (error) {
     console.error("Error loading model:", error.message);
-    return null;
   }
-}
-
-const inputPath = path.resolve(__dirname, "../models/model.json");
-
-const loadedModel = loadModel(inputPath);
-if (loadedModel) {
-  // Use the loaded model for inference or other tasks
-  // Example: const result = loadedModel.predict(tf.tensor2d([[1, 2, 3, 4]], [1, 4]));
-  //   console.log(result.dataSync());
-}
+};

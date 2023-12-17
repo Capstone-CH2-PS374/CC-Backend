@@ -2,10 +2,7 @@ const prisma = require("../config/db");
 // const firebaseAdmin = require("firebase-admin");
 
 const register = async (req, res) => {
-  // harusnya bisa nangkap role tapi gua bingung caranya gimana
-  // const register = async (req, res, role) => {
-
-  const { userId, roleId } = req.body;
+  const { userId } = req.body;
 
   try {
     // * Cek apakah pengguna dengan UUID tersebut sudah terdaftar
@@ -31,8 +28,7 @@ const register = async (req, res) => {
     const createdUser = await prisma.user.create({
       data: {
         userId,
-        roleId,
-        // roleId: roleInfo.roleId,
+        role,
       },
     });
 
@@ -49,7 +45,7 @@ const login = async (req, res, role) => {
   const { userId } = req.body;
 
   try {
-    const entity = role === "user" ? "user" : "organization";
+    const entity = role === "User" ? "User" : "Organization";
 
     // Cari pengguna di PostgreSQL berdasarkan UUID
     const result = await prisma[entity].findUnique({

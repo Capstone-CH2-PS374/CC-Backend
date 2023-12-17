@@ -7,16 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Role {
-  roleId Int    @id @default(autoincrement())
-  role   String
-  users  User[]
-}
-
 model User {
   userId       String        @id @map("uuid") // assuming UUID from frontend
-  roleId       Int           @map("role_id")
-  role         Role          @relation(fields: [roleId], references: [roleId])
+  role         Role
   userData     UserData?
   organization Organization?
   volunteer    Volunteer?
@@ -80,4 +73,9 @@ model QRCode {
   date    DateTime
   eventId Int      @map("event_id")
   event   Event    @relation(fields: [eventId], references: [eventId])
+}
+
+enum Role {
+  User
+  Organization
 }
