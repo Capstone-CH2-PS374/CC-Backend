@@ -3,16 +3,8 @@ const qrHandler = require("../controllers/qrcode.controller");
 
 const router = express.Router();
 
-router.get("/qrcode/:eventId", async (req, res) => {
-  const { eventId } = req.params;
-
-  try {
-    const qrCode = await qrHandler.generateQRCode(eventId);
-    res.send(qrCode);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+router.post("/qrcode", qrHandler.createHash);
+router.get("/qrcode", qrHandler.getAllQr);
+router.get("/qrcode/:eventId", qrHandler.getQrEventId);
 
 module.exports = router;

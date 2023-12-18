@@ -17,3 +17,5 @@ const loadModel = async () => {
     console.error("Error loading model:", error.message);
   }
 };
+
+const makePredict = async () => {};

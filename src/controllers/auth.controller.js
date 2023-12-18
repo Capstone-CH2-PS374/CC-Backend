@@ -1,7 +1,7 @@
 const prisma = require("../config/db");
 // const firebaseAdmin = require("firebase-admin");
 
-const register = async (req, res) => {
+const register = async (req, res, role) => {
   const { userId } = req.body;
 
   try {

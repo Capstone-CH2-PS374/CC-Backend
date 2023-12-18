@@ -69,7 +69,7 @@ model Volunteer {
 }
 
 model QRCode {
-  qrhash  Int      @id @default(autoincrement())
+  qrhash  String   @id
   date    DateTime
   eventId Int      @map("event_id")
   event   Event    @relation(fields: [eventId], references: [eventId])
