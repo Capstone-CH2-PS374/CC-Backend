@@ -74,11 +74,11 @@ const createEvent = async (req, res) => {
 // Handler untuk mengupdate event berdasarkan ID
 const updateEventById = async (req, res) => {
   const eventId = parseInt(req.params.id);
-  const updatedEvent = req.body;
+  const { name, start, end, location, type, description } = req.body;
   try {
     const event = await prisma.event.update({
       where: { eventId: eventId },
-      data: updatedEvent,
+      data: { name, start, end, location, type, description },
     });
     res.json(event);
   } catch (error) {

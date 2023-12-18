@@ -86,7 +86,7 @@ const updateOrganizationById = async (req, res) => {
 
 // Handler untuk menghapus Organization berdasarkan ID
 const deleteOrganizationById = async (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
   try {
     await prisma.organization.delete({

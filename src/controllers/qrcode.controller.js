@@ -1,10 +1,8 @@
 const prisma = require("../config/db");
 const crypto = require("crypto");
 
-// Function to generate a unique hash based on the current date
-const generateUniqueHash = async (req, res) => {
-  // const eventId = parseInt(req.params.id);
-  let eventId = 1;
+const createHash = async (req, res) => {
+  const { eventId } = req.body;
   try {
     const event = await prisma.Event.findFirst({
       where: { eventId },
@@ -15,31 +13,10 @@ const generateUniqueHash = async (req, res) => {
     const date = startDateString.replace(/-/g, "");
     const dataHash = eventId.toString() + date;
 
-    const hash = crypto.createHash("sha256").update(dataHash).digest("hex"); // Hash the date
-
-    return hash;
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-// Generate a unique hash for today's date
-
-const createHash = async (req, res) => {
-  const { eventId } = req.body;
-  try {
-    const event = await prisma.Event.findFirst({
-      where: { eventId },
-    });
-
-    const startDate = event.start;
-    const uniqueHash = generateUniqueHash();
-
-    // console.log(uniqueHash.toString());
+    const hash = crypto.createHash("sha256").update(dataHash).digest("hex");
 
     const qrcode = await prisma.QRCode.create({
-      data: { qrhash: uniqueHash, date: startDate, eventId },
+      data: { qrhash: hash, date: startDate, eventId },
     });
 
     res.status(201).json(qrcode);
@@ -49,6 +26,38 @@ const createHash = async (req, res) => {
   }
 };
 
+const getAllQr = async (req, res) => {
+  try {
+    const qrcode = await prisma.QRCode.findMany();
+    res.json(qrcode);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getQrEventId = async (req, res) => {
+  const eventId = parseInt(req.params.eventId);
+  try {
+    const qrcode = await prisma.QRCode.findMany({
+      where: {
+        eventId,
+      },
+    });
+
+    if (qrcode) {
+      res.json(qrcode);
+    } else {
+      res.status(404).json({ error: "QRCode not found for the given eventId" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   createHash,
+  getAllQr,
+  getQrEventId,
 };
