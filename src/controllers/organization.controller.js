@@ -10,7 +10,7 @@ const createOrganization = async (req, res) => {
         userId,
         name,
         address,
-        eventId,
+        eventId: parseInt(eventId),
       },
     });
 
@@ -23,19 +23,17 @@ const createOrganization = async (req, res) => {
 
 // Handler untuk mencari organisasi berdasarkan userId
 const getOrganizationById = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId;
 
   try {
     const organization = await prisma.organization.findUnique({
-      where: { userId: parseInt(userId) },
+      where: { userId: userId },
     });
 
     if (organization) {
       res.json(organization);
     } else {
-      res
-        .status(404)
-        .json({ error: "Organization not found for the given userId" });
+      res.status(404).json({ error: "Organization not found" });
     }
   } catch (error) {
     console.error(error);
@@ -54,7 +52,12 @@ const getAllOrganizations = async (req, res) => {
       skip: skip,
       take: limit,
     });
-    res.json(organizations);
+
+    if (!organizations) {
+      res.json({ message: "Organization is empty" });
+    } else {
+      res.json(organizations);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -63,21 +66,29 @@ const getAllOrganizations = async (req, res) => {
 
 // Handler untuk memperbarui Organization berdasarkan ID
 const updateOrganizationById = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId;
   const { name, address, eventId } = req.body;
 
   try {
-    const updatedOrganization = await prisma.organization.update({
-      where: { userId: parseInt(userId) },
-      data: {
-        userId,
-        name,
-        address,
-        eventId,
-      },
+    const findOrganization = await prisma.organization.findUnique({
+      where: { userId: userId },
     });
 
-    res.json(updatedOrganization);
+    if (findOrganization) {
+      const updatedOrganization = await prisma.organization.update({
+        where: { userId: userId },
+        data: {
+          userId,
+          name,
+          address,
+          eventId,
+        },
+      });
+
+      res.json(updatedOrganization);
+    } else {
+      res.status(404).json({ error: "Organization not found" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -86,7 +97,7 @@ const updateOrganizationById = async (req, res) => {
 
 // Handler untuk menghapus Organization berdasarkan ID
 const deleteOrganizationById = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId;
 
   try {
     await prisma.organization.delete({

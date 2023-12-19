@@ -13,4 +13,4 @@ COPY . .
 ENV PORT 3000
 
 # Run the web service on container startup.
-CMD ["npm","run", "start"]
+CMD ["npm","run","start"]
