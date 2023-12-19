@@ -21,10 +21,10 @@ const getAllUsers = async (req, res) => {
 
 // Handler untuk mendapatkan pengguna berdasarkan ID
 const getUserById = async (req, res) => {
-  const userId = parseInt(req.params.id);
+  const userId = req.params.userId;
   try {
     const user = await prisma.userData.findUnique({
-      where: { id: userId },
+      where: { userId: userId },
     });
 
     if (user) {
@@ -65,7 +65,9 @@ const createUser = async (req, res) => {
         phone,
       },
     });
-    res.status(201).json(createdUser);
+    res
+      .status(201)
+      .json({ message: "User created successfully", data: createdUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -74,15 +76,39 @@ const createUser = async (req, res) => {
 
 // Handler untuk mengupdate pengguna berdasarkan ID
 const updateUserById = async (req, res) => {
-  const userId = parseInt(req.params.id);
-  const { name, address, birthDate, jobs, highest_edu, interest, phone } =
-    req.body;
+  const userId = req.params.userId;
+  const {
+    name,
+    address,
+    birthDate,
+    jobs,
+    highest_edu,
+    type_organization,
+    phone,
+  } = req.body;
   try {
-    const user = await prisma.userData.update({
-      where: { id: userId },
-      data: { name, address, birthDate, jobs, highest_edu, interest, phone },
+    const findUser = await prisma.userData.findUnique({
+      where: { userId: userId },
     });
-    res.json(user);
+
+    if (findUser) {
+      const user = await prisma.userData.update({
+        where: { userId: userId },
+        data: {
+          name,
+          address,
+          birthDate,
+          jobs,
+          highest_edu,
+          type_organization,
+          phone,
+        },
+      });
+
+      res.json({ message: "User updated successfully", data: user });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -91,10 +117,10 @@ const updateUserById = async (req, res) => {
 
 // Handler untuk menghapus pengguna berdasarkan ID
 const deleteUserById = async (req, res) => {
-  const userId = parseInt(req.params.id);
+  const userId = req.params.userId;
   try {
     await prisma.userData.delete({
-      where: { id: userId },
+      where: { userId: userId },
     });
     res.json({ message: "User deleted successfully" });
   } catch (error) {

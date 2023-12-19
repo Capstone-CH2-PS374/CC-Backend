@@ -1,8 +1,8 @@
 const prisma = require("../config/db");
 // const firebaseAdmin = require("firebase-admin");
 
-const register = async (req, res, role) => {
-  const { userId } = req.body;
+const register = async (req, res) => {
+  const { userId, role } = req.body;
 
   try {
     // * Cek apakah pengguna dengan UUID tersebut sudah terdaftar
@@ -41,8 +41,23 @@ const register = async (req, res, role) => {
   }
 };
 
-const login = async (req, res, role) => {
-  const { userId } = req.body;
+const getUsers = async (req, res) => {
+  try {
+    const userRegist = await prisma.user.findMany();
+
+    if (userRegist) {
+      res.json(userRegist);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const login = async (req, res) => {
+  const { userId, role } = req.body;
 
   try {
     const entity = role === "User" ? "User" : "Organization";
@@ -71,4 +86,5 @@ const login = async (req, res, role) => {
 module.exports = {
   register,
   login,
+  getUsers,
 };

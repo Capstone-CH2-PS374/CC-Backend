@@ -21,7 +21,7 @@ const getAllEvents = async (req, res) => {
 
 // Handler untuk mendapatkan event berdasarkan ID
 const getEventById = async (req, res) => {
-  const eventId = parseInt(req.params.id);
+  const eventId = parseInt(req.params.eventId);
   try {
     const event = await prisma.event.findUnique({
       where: { eventId: eventId },
@@ -60,7 +60,7 @@ const createEvent = async (req, res) => {
         location,
         type,
         description,
-        categoryId,
+        categoryId: parseInt(categoryId),
         registerDate,
       },
     });
@@ -73,14 +73,22 @@ const createEvent = async (req, res) => {
 
 // Handler untuk mengupdate event berdasarkan ID
 const updateEventById = async (req, res) => {
-  const eventId = parseInt(req.params.id);
+  const eventId = parseInt(req.params.eventId);
   const { name, start, end, location, type, description } = req.body;
   try {
-    const event = await prisma.event.update({
+    const findEvent = await prisma.event.findUnique({
       where: { eventId: eventId },
-      data: { name, start, end, location, type, description },
     });
-    res.json(event);
+
+    if (findEvent) {
+      const event = await prisma.event.update({
+        where: { eventId: eventId },
+        data: { name, start, end, location, type, description },
+      });
+      res.json(event);
+    } else {
+      res.status(404).json({ error: "Event not found" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -89,7 +97,7 @@ const updateEventById = async (req, res) => {
 
 // Handler untuk menghapus event berdasarkan ID
 const deleteEventById = async (req, res) => {
-  const eventId = parseInt(req.params.id);
+  const eventId = parseInt(req.params.eventId);
   try {
     await prisma.event.delete({
       where: { eventId: eventId },

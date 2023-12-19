@@ -2,7 +2,7 @@ const prisma = require("../config/db");
 
 // Handler untuk membuat Category baru
 const createCategory = async (req, res) => {
-  const { category } = req.body;
+  const category = req.body;
 
   try {
     const newCategory = await prisma.category.create({
@@ -31,11 +31,11 @@ const getAllCategories = async (req, res) => {
 
 // Handler untuk mendapatkan Category berdasarkan ID
 const getCategoryById = async (req, res) => {
-  const { id } = req.params;
+  const categoryId = req.params.categoryId;
 
   try {
     const category = await prisma.category.findUnique({
-      where: { categoryId: parseInt(id) },
+      where: { categoryId: parseInt(categoryId) },
     });
 
     if (category) {
@@ -51,18 +51,26 @@ const getCategoryById = async (req, res) => {
 
 // Handler untuk memperbarui Category berdasarkan ID
 const updateCategoryById = async (req, res) => {
-  const { id } = req.params;
-  const { category } = req.body;
+  const categoryId = req.params.categoryId;
+  const category = req.body;
 
   try {
-    const updatedCategory = await prisma.category.update({
-      where: { categoryId: parseInt(id) },
-      data: {
-        category,
-      },
+    const findCategory = await prisma.category.findUnique({
+      where: { categoryId: parseInt(categoryId) },
     });
 
-    res.json(updatedCategory);
+    if (findCategory) {
+      const updatedCategory = await prisma.category.update({
+        where: { categoryId: parseInt(categoryId) },
+        data: {
+          category,
+        },
+      });
+
+      res.json(updatedCategory);
+    } else {
+      res.status(404).json({ error: "Category not found" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -71,11 +79,11 @@ const updateCategoryById = async (req, res) => {
 
 // Handler untuk menghapus Category berdasarkan ID
 const deleteCategoryById = async (req, res) => {
-  const { id } = req.params;
+  const categoryId = req.params.categoryId;
 
   try {
     await prisma.category.delete({
-      where: { categoryId: parseInt(id) },
+      where: { categoryId: parseInt(categoryId) },
     });
 
     res.json({ message: "Category deleted successfully" });

@@ -2,10 +2,10 @@ const prisma = require("../config/db");
 const crypto = require("crypto");
 
 const createHash = async (req, res) => {
-  const { eventId } = req.body;
+  const eventId = parseInt(req.params.eventId);
   try {
     const event = await prisma.Event.findFirst({
-      where: { eventId },
+      where: { eventId: eventId },
     });
 
     const startDate = event.start;
@@ -39,16 +39,16 @@ const getAllQr = async (req, res) => {
 const getQrEventId = async (req, res) => {
   const eventId = parseInt(req.params.eventId);
   try {
-    const qrcode = await prisma.QRCode.findMany({
+    const qrcode = await prisma.QRCode.findFirst({
       where: {
-        eventId,
+        eventId: eventId,
       },
     });
 
     if (qrcode) {
       res.json(qrcode);
     } else {
-      res.status(404).json({ error: "QRCode not found for the given eventId" });
+      res.status(404).json({ error: "QRCode not found" });
     }
   } catch (error) {
     console.error(error);

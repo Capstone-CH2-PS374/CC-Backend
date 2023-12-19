@@ -16,25 +16,25 @@ model User {
 }
 
 model UserData {
-  userId            String @id @map("user_id")
+  userId            String  @id @map("user_id")
   name              String
-  address           String
-  birthDate         String @map("birth_date")
-  jobs              String
-  highest_edu       String @map("highest_edu")
-  type_organization String @map("type_organization")
-  interest          String
-  phone             String
-  user              User   @relation(fields: [userId], references: [userId])
+  address           String?
+  birthDate         String? @map("birth_date")
+  jobs              String?
+  highest_edu       String? @map("highest_edu")
+  type_organization String? @map("type_organization")
+  interest          String?
+  phone             String?
+  user              User    @relation(fields: [userId], references: [userId])
 }
 
 model Organization {
-  userId  String @id @map("user_id")
+  userId  String  @id @map("user_id")
   name    String
-  address String
-  eventId Int    @map("event_id")
-  event   Event  @relation(fields: [eventId], references: [eventId])
-  user    User   @relation(fields: [userId], references: [userId])
+  address String?
+  eventId Int     @map("event_id")
+  event   Event   @relation(fields: [eventId], references: [eventId])
+  user    User    @relation(fields: [userId], references: [userId])
 }
 
 model Category {
@@ -48,9 +48,9 @@ model Event {
   name          String
   start         DateTime
   end           DateTime
-  location      String
-  type          String
-  description   String
+  location      String?
+  type          String?
+  description   String?
   categoryId    Int            @map("category_id")
   registerDate  DateTime       @default(now()) @map("register_date")
   category      Category       @relation(fields: [categoryId], references: [categoryId])
@@ -60,12 +60,12 @@ model Event {
 }
 
 model Volunteer {
-  volunteerId Int    @id @default(autoincrement())
-  userId      String @unique @map("user_id")
-  eventId     Int    @map("event_id")
-  status      String
-  user        User   @relation(fields: [userId], references: [userId])
-  event       Event  @relation(fields: [eventId], references: [eventId])
+  volunteerId Int     @id @default(autoincrement())
+  userId      String  @unique @map("user_id")
+  eventId     Int     @map("event_id")
+  status      String?
+  user        User    @relation(fields: [userId], references: [userId])
+  event       Event   @relation(fields: [eventId], references: [eventId])
 }
 
 model QRCode {
