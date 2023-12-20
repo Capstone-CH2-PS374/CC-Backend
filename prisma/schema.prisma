@@ -32,8 +32,7 @@ model Organization {
   userId  String  @id @map("user_id")
   name    String
   address String?
-  eventId Int     @map("event_id")
-  event   Event   @relation(fields: [eventId], references: [eventId])
+  events  Event[]
   user    User    @relation(fields: [userId], references: [userId])
 }
 
@@ -44,19 +43,20 @@ model Category {
 }
 
 model Event {
-  eventId       Int            @id @default(autoincrement())
-  name          String
-  start         DateTime
-  end           DateTime
-  location      String?
-  type          String?
-  description   String?
-  categoryId    Int            @map("category_id")
-  registerDate  DateTime       @default(now()) @map("register_date")
-  category      Category       @relation(fields: [categoryId], references: [categoryId])
-  organizations Organization[]
-  volunteers    Volunteer[]
-  qrcodes       QRCode[]
+  eventId        Int           @id @default(autoincrement())
+  name           String
+  start          DateTime
+  end            DateTime
+  location       String?
+  type           String?
+  description    String?
+  categoryId     Int           @map("category_id")
+  registerDate   DateTime      @default(now()) @map("register_date")
+  organizationId String        @map("organization_id")
+  category       Category      @relation(fields: [categoryId], references: [categoryId])
+  organization   Organization? @relation(fields: [organizationId], references: [userId])
+  volunteers     Volunteer[]
+  qrcodes        QRCode[]
 }
 
 model Volunteer {

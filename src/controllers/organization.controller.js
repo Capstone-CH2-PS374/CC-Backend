@@ -2,7 +2,7 @@ const prisma = require("../config/db");
 
 // Handler untuk membuat organisasi baru
 const createOrganization = async (req, res) => {
-  const { userId, name, address, eventId } = req.body;
+  const { userId, name, address } = req.body;
 
   try {
     const organization = await prisma.organization.create({
@@ -10,7 +10,6 @@ const createOrganization = async (req, res) => {
         userId,
         name,
         address,
-        eventId: parseInt(eventId),
       },
     });
 
@@ -67,7 +66,7 @@ const getAllOrganizations = async (req, res) => {
 // Handler untuk memperbarui Organization berdasarkan ID
 const updateOrganizationById = async (req, res) => {
   const userId = req.params.userId;
-  const { name, address, eventId } = req.body;
+  const { name, address } = req.body;
 
   try {
     const findOrganization = await prisma.organization.findUnique({
@@ -81,7 +80,6 @@ const updateOrganizationById = async (req, res) => {
           userId,
           name,
           address,
-          eventId,
         },
       });
 
