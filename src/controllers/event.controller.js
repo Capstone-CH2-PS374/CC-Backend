@@ -49,6 +49,7 @@ const createEvent = async (req, res) => {
     description,
     categoryId,
     registerDate,
+    organizationId,
   } = req.body;
 
   try {
@@ -62,6 +63,7 @@ const createEvent = async (req, res) => {
         description,
         categoryId: parseInt(categoryId),
         registerDate,
+        organizationId,
       },
     });
     res.status(201).json(createdEvent);
