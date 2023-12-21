@@ -1,2 +1,10 @@
 runtime: nodejs18
-service: backendImpacter
+service: backendimpacter
+env_variables:
+  NODE_ENV: production
+  PORT: 3000
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always

@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const { getUserById } = require("./user.controller");
 
 // Handler untuk mendapatkan semua event
 const getAllEvents = async (req, res) => {
@@ -111,10 +112,51 @@ const deleteEventById = async (req, res) => {
   }
 };
 
+// Handler untuk menambahkan hasil predict
+const createPredict = async (req, res) => {
+  // const userId = getUserById();
+  const {
+    prediction,
+  } = req.body;
+
+  try {
+    const insertPredict = await prisma.predict.create({
+      data: {
+        prediction,
+      },
+    });
+    res.status(201).json(insertPredict);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+// Handler untuk mendapatkan event berdasarkan ID
+const getEventPredict = async (req, res) => {
+  
+  try {
+    const event = await prisma.$queryRaw(
+      Prisma.sql`SELECT eventId AS EventID, json_data->>'eventId' AS eventId from Event, Predict, 
+      jsonb_object_keys(Predict.prediction) AS keys 
+      ORDER BY (Predict.prediction->keys->>'eventId')::int;`
+    );
+
+    if (event) {
+      res.json(event);
+    } else {
+      res.status(404).json({ error: "Event not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 module.exports = {
   getAllEvents,
   getEventById,
   createEvent,
   updateEventById,
   deleteEventById,
+  createPredict,
+  getEventPredict,
 };

@@ -9,5 +9,6 @@ router.get("/events/:eventId", eventHandler.getEventById);
 router.post("/events", upload.none(), eventHandler.createEvent);
 router.put("/events/:eventId", upload.none(), eventHandler.updateEventById);
 router.delete("/events/:eventId", eventHandler.deleteEventById);
-
+router.post("/events/predict", upload.none(), eventHandler.createPredict);
+router.get("/events/predicted", eventHandler.getEventPredict);
 module.exports = router;

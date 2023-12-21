@@ -13,6 +13,7 @@ model User {
   userData     UserData?
   organization Organization?
   volunteer    Volunteer?
+  Predict      Predict?
 }
 
 model UserData {
@@ -73,6 +74,12 @@ model QRCode {
   date    DateTime
   eventId Int      @map("event_id")
   event   Event    @relation(fields: [eventId], references: [eventId])
+}
+
+model Predict {
+  userId  String @unique @map("user_id")
+  prediction Json
+  user    User   @relation(fields: [userId], references: [userId])
 }
 
 enum Role {
