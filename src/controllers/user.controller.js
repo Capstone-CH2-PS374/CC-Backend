@@ -83,16 +83,16 @@ const createUser = async (req, res) => {
       },
     });
 
-    const jsonString = JSON.stringify(userData, function (key, value) {
-      if (typeof value === "object" && value !== null) {
-        const seen = new WeakSet();
-        if (seen.has(value)) {
-          return "[Circular Reference]";
-        }
-        seen.add(value);
-      }
-      return value;
-    });
+    // const jsonString = JSON.stringify(userData, function (key, value) {
+    //   if (typeof value === "object" && value !== null) {
+    //     const seen = new WeakSet();
+    //     if (seen.has(value)) {
+    //       return "[Circular Reference]";
+    //     }
+    //     seen.add(value);
+    //   }
+    //   return value;
+    // });
 
     // const prediction = await axios.post(urlModel, jsonString);
 
@@ -126,7 +126,6 @@ const createUser = async (req, res) => {
     res.status(201).json({
       message: "User created successfully",
       data: createdUser,
-      prediction: prediction,
     });
   } catch (error) {
     console.error(error);

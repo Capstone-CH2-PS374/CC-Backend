@@ -1,14 +1,30 @@
 const prisma = require("../config/db");
 const { Storage } = require("@google-cloud/storage");
-const multer = require("multer");
+// const multer = require("multer");
+const path = require("path");
 
 const storage = new Storage({
   projectId: "capstone-ch2-ps374",
-  keyFilename:
-    "C:/Code Programming/Capstone-CH2-PS374/key/capstone-ch2-ps374-bc127f18f6bb.json",
+  keyFilename: path.join(
+    __dirname,
+    "../../key/capstone-ch2-ps374-bc127f18f6bb.json"
+  ),
 });
 
 const bucketName = "ch2ps374_image_bucket";
+
+// Fungsi untuk mengambil gambar dari bucket
+// const getImageFromBucket = async (filename) => {
+//   const file = storage.bucket(bucketName).file(filename);
+
+//   const [exists] = await file.exists();
+
+//   if (!exists) {
+//     throw new Error("Image not found");
+//   }
+
+//   return file.createReadStream();
+// };
 
 // Handler untuk mendapatkan semua event
 const getAllEvents = async (req, res) => {
@@ -21,6 +37,20 @@ const getAllEvents = async (req, res) => {
       skip: skip,
       take: limit,
     });
+
+    // Menambahkan URL gambar ke setiap event
+    // const eventsWithImages = await Promise.all(
+    //   events.map(async (event) => {
+    //     try {
+    //       const imageUrl = `https://storage.googleapis.com/${bucketName}/${event.photo}`;
+    //       const imageStream = await getImageFromBucket(event.photo);
+    //       return event;
+    //     } catch (error) {
+    //       console.error(error);
+    //       return event;
+    //     }
+    //   })
+    // );
 
     res.json(events);
   } catch (error) {
@@ -38,6 +68,10 @@ const getEventById = async (req, res) => {
     });
 
     if (event) {
+      // Menambahkan URL gambar ke event
+      // const imageStream = await getImageFromBucket(event.photo);
+      // event.imageUrl = `https://storage.googleapis.com/${bucketName}/${event.photo}`;
+
       res.json(event);
     } else {
       res.status(404).json({ error: "Event not found" });
