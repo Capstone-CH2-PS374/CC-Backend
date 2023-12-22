@@ -1,4 +1,14 @@
 const prisma = require("../config/db");
+const { Storage } = require("@google-cloud/storage");
+const multer = require("multer");
+
+const storage = new Storage({
+  projectId: "capstone-ch2-ps374",
+  keyFilename:
+    "C:/Code Programming/Capstone-CH2-PS374/key/capstone-ch2-ps374-bc127f18f6bb.json",
+});
+
+const bucketName = "ch2ps374_image_bucket";
 
 // Handler untuk mendapatkan semua event
 const getAllEvents = async (req, res) => {
@@ -53,6 +63,18 @@ const createEvent = async (req, res) => {
   } = req.body;
 
   try {
+    // Pastikan bahwa req.file adalah objek file yang dikirimkan melalui formulir
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload a file" });
+    }
+
+    // Menentukan nama file yang akan disimpan di Google Cloud Storage
+    const filename = Date.now() + "-" + req.file.originalname;
+    const file = storage.bucket(bucketName).file(filename);
+
+    // Menyimpan file di Google Cloud Storage
+    await file.save(req.file.buffer);
+
     const createdEvent = await prisma.event.create({
       data: {
         name,
@@ -64,8 +86,11 @@ const createEvent = async (req, res) => {
         categoryId: parseInt(categoryId),
         registerDate,
         organizationId,
+        // Menambahkan informasi file ke objek event yang akan disimpan di database
+        photo: filename,
       },
     });
+
     res.status(201).json(createdEvent);
   } catch (error) {
     console.error(error);
@@ -74,23 +99,74 @@ const createEvent = async (req, res) => {
 };
 
 // Handler untuk mengupdate event berdasarkan ID
+// const updateEventById = async (req, res) => {
+//   const eventId = parseInt(req.params.eventId);
+//   const { name, start, end, location, type, description } = req.body;
+//   try {
+//     const findEvent = await prisma.event.findUnique({
+//       where: { eventId: eventId },
+//     });
+
+//     if (findEvent) {
+//       const event = await prisma.event.update({
+//         where: { eventId: eventId },
+//         data: { name, start, end, location, type, description },
+//       });
+//       res.json(event);
+//     } else {
+//       res.status(404).json({ error: "Event not found" });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 const updateEventById = async (req, res) => {
-  const eventId = parseInt(req.params.eventId);
-  const { name, start, end, location, type, description } = req.body;
+  const eventId = req.params.id; // Ambil ID acara dari parameter URL
+  const {
+    name,
+    start,
+    end,
+    location,
+    type,
+    description,
+    categoryId,
+    registerDate,
+    organizationId,
+  } = req.body;
+
   try {
-    const findEvent = await prisma.event.findUnique({
-      where: { eventId: eventId },
+    // Pastikan bahwa req.file adalah objek file yang dikirimkan melalui formulir
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload a file" });
+    }
+
+    // Menentukan nama file yang akan disimpan di Google Cloud Storage
+    const filename = Date.now() + "-" + req.file.originalname;
+    const file = storage.bucket(bucketName).file(filename);
+
+    // Menyimpan file di Google Cloud Storage
+    await file.save(req.file.buffer);
+
+    const updatedEvent = await prisma.event.update({
+      where: { id: parseInt(eventId) },
+      data: {
+        name,
+        start,
+        end,
+        location,
+        type,
+        description,
+        categoryId: parseInt(categoryId),
+        registerDate,
+        organizationId,
+        // Menambahkan informasi file ke objek event yang akan disimpan di database
+        photo: filename,
+      },
     });
 
-    if (findEvent) {
-      const event = await prisma.event.update({
-        where: { eventId: eventId },
-        data: { name, start, end, location, type, description },
-      });
-      res.json(event);
-    } else {
-      res.status(404).json({ error: "Event not found" });
-    }
+    res.status(200).json(updatedEvent);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

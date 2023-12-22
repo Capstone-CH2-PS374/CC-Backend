@@ -18,7 +18,7 @@ CREATE TABLE "UserData" (
     "jobs" TEXT,
     "highest_edu" TEXT,
     "type_organization" TEXT,
-    "interest" TEXT,
+    "skills" TEXT,
     "phone" TEXT,
 
     CONSTRAINT "UserData_pkey" PRIMARY KEY ("user_id")
@@ -53,6 +53,7 @@ CREATE TABLE "Event" (
     "category_id" INTEGER NOT NULL,
     "register_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "organization_id" TEXT NOT NULL,
+    "photo" TEXT,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("eventId")
 );

@@ -23,7 +23,7 @@ model UserData {
   jobs              String?
   highest_edu       String? @map("highest_edu")
   type_organization String? @map("type_organization")
-  interest          String?
+  skills            String?
   phone             String?
   user              User    @relation(fields: [userId], references: [userId])
 }
@@ -53,6 +53,7 @@ model Event {
   categoryId     Int           @map("category_id")
   registerDate   DateTime      @default(now()) @map("register_date")
   organizationId String        @map("organization_id")
+  photo          String?
   category       Category      @relation(fields: [categoryId], references: [categoryId])
   organization   Organization? @relation(fields: [organizationId], references: [userId])
   volunteers     Volunteer[]
